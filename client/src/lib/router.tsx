@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 
 import { LoginPage } from '../features/auth/LoginPage'
-import { ProtectedRoute } from '../features/auth/ProtectedRoute'
+import { GuestRoute, ProtectedRoute } from '../features/auth/ProtectedRoute'
 import { RegisterPage } from '../features/auth/RegisterPage'
 import { TasksPage } from '../features/tasks/TasksPage'
 
@@ -12,11 +12,19 @@ export const router = createBrowserRouter([
   },
   {
     path: '/login',
-    element: <LoginPage />,
+    element: (
+      <GuestRoute>
+        <LoginPage />
+      </GuestRoute>
+    ),
   },
   {
     path: '/register',
-    element: <RegisterPage />,
+    element: (
+      <GuestRoute>
+        <RegisterPage />
+      </GuestRoute>
+    ),
   },
   {
     path: '/tasks',

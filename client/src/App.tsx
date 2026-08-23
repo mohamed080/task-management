@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router-dom'
 import { queryClient } from './lib/queryClient'
 import { router } from './lib/router'
 
-export function App() {
+export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
