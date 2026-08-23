@@ -2,6 +2,7 @@ import cors from "cors";
 import express, { type Express } from "express";
 
 import authRoutes from "./routes/auth.routes.js";
+import taskRoutes from "./routes/task.routes.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { NotFoundError } from "./errors/app-error.js";
 import { globalLimiter, authLimiter } from "./middleware/rate-limiter.js";
@@ -21,6 +22,7 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/tasks", taskRoutes);
 
 app.use((req, _res, next) => {
     next(new NotFoundError(`Route ${req.method} ${req.originalUrl} not found`));

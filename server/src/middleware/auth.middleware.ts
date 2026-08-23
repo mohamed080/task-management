@@ -1,13 +1,13 @@
-import type { Response, NextFunction } from "express";
+import type { RequestHandler } from "express";
 import { UnauthorizedError } from "../errors/app-error.js";
 import { verifyToken } from "../utils/jwt.js";
 import { User } from "../models/user.model.js";
 import type { AuthenticatedRequest } from "../types/express.js";
 
-export const requireAuth = async (
-    req: AuthenticatedRequest,
-    _res: Response,
-    next: NextFunction,
+export const requireAuth: RequestHandler = async (
+    req,
+    _res,
+    next,
 ): Promise<void> => {
     const authHeader = req.headers.authorization;
 
@@ -28,7 +28,7 @@ export const requireAuth = async (
             throw new UnauthorizedError("User associated with this token no longer exists");
         }
 
-        req.userId = payload.userId;
+        (req as AuthenticatedRequest).userId = payload.userId;
         next();
     } catch (error: unknown) {
         if (error instanceof Error && error.name === "TokenExpiredError") {

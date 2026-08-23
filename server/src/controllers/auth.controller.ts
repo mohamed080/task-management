@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { Request, RequestHandler, Response } from "express";
 
 import { BadRequestError, UnauthorizedError } from "../errors/app-error.js";
 import { getCurrentUser, loginUser, registerUser } from "../services/auth.service.js";
@@ -57,15 +57,17 @@ export const login = async (
     });
 };
 
-export const getMe = async(
-    req: AuthenticatedRequest,
+export const getMe: RequestHandler = async(
+    req,
     res: Response,
 ): Promise<void> => {
-    if (!req.userId) {
+    const { userId } = req as Partial<AuthenticatedRequest>;
+
+    if (!userId) {
         throw new UnauthorizedError("Authentication token is required");
     }
 
-    const user = await getCurrentUser(req.userId);
+    const user = await getCurrentUser(userId);
 
     res.status(200).json({
         success: true,
