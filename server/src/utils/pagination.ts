@@ -1,6 +1,6 @@
 export interface PaginationInput {
-  page?: string | undefined;
-  limit?: string | undefined;
+  page?: number | undefined;
+  limit?: number | undefined;
 }
 
 export interface PaginationMeta {
@@ -12,14 +12,15 @@ export interface PaginationMeta {
 export const getPagination = (
   input: PaginationInput,
 ): PaginationMeta => {
-  const page = Number(input.page);
-  const limit = Number(input.limit);
+  const { page, limit } = input;
 
   const currentPage =
-    Number.isInteger(page) && page > 0 ? page : 1;
+    typeof page === "number" && Number.isInteger(page) && page > 0
+      ? page
+      : 1;
 
   const currentLimit =
-    Number.isInteger(limit) && limit > 0
+    typeof limit === "number" && Number.isInteger(limit) && limit > 0
       ? Math.min(limit, 100)
       : 10;
 

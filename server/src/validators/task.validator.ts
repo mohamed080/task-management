@@ -30,12 +30,21 @@ export const taskIdSchema = z.object({
   id: z.string().min(1, "Task ID is required"),
 });
 
+const positiveIntegerQuerySchema = (field: string) =>
+  z
+    .string()
+    .regex(/^\d+$/, `${field} must be a positive integer`)
+    .transform(Number)
+    .refine((value) => value > 0, `${field} must be greater than 0`);
+
 export const taskQuerySchema = z.object({
   search: z.string().trim().optional(),
   status: taskStatusSchema.optional(),
   priority: taskPrioritySchema.optional(),
-  page: z.string().optional(),
-  limit: z.string().optional(),
+  page: positiveIntegerQuerySchema("Page").optional(),
+  limit: positiveIntegerQuerySchema("Limit")
+    .refine((value) => value <= 100, "Limit must not exceed 100")
+    .optional(),
 }).strip();
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;

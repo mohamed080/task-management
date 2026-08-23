@@ -1,4 +1,4 @@
-import cors from "cors";
+import cors, { type CorsOptions } from "cors";
 import express, { type Express } from "express";
 
 import authRoutes from "./routes/auth.routes.js";
@@ -9,7 +9,11 @@ import { globalLimiter, authLimiter } from "./middleware/rate-limiter.js";
 
 const app: Express = express();
 
-app.use(cors());
+const corsOptions: CorsOptions = {
+    origin: process.env.CLIENT_URL || true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/api", globalLimiter);
