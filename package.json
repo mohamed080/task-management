@@ -1,8 +1,12 @@
 {
+	"name": "task-management",
+	"private": true,
+	"scripts": {
+		"prepare": "husky",
+		"lint": "pnpm --recursive run lint",
+		"typecheck": "pnpm --recursive run typecheck"
+	},
 	"devDependencies": {
 		"husky": "^9.1.7"
-	},
-	"scripts": {
-		"prepare": "husky"
 	}
 }

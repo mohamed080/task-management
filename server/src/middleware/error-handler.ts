@@ -8,62 +8,56 @@ import {
   InternalServerError,
 } from "../errors/app-error.js";
 
-const normalizeError = (error: any): AppError => {
+const isErrorLike = (error: unknown): error is Error & Record<string, unknown> =>
+  typeof error === "object" && error !== null && "name" in error;
+
+const normalizeError = (error: unknown): AppError => {
   if (error instanceof AppError) {
     return error;
   }
 
-  // Handle Mongoose Validation Error
-  if (error.name === "ValidationError" && error.errors) {
-    const messages = Object.values(error.errors).map(
-      (err: any) => err.message || "Validation failed",
+  if (isErrorLike(error) && error.name === "ValidationError" && "errors" in error) {
+    const errors = error.errors as Record<string, { message?: string }>;
+    const messages = Object.values(errors).map(
+      (err) => err.message || "Validation failed",
     );
     return new BadRequestError(messages);
   }
 
-  // Handle Mongoose Cast Error (invalid ObjectIds etc.)
-  if (error.name === "CastError") {
-    return new BadRequestError(`Invalid format for path: ${error.path}`);
+  if (isErrorLike(error) && error.name === "CastError") {
+    const path = (error as Record<string, unknown>).path;
+    return new BadRequestError(`Invalid format for path: ${path}`);
   }
 
-  // Handle MongoDB duplicate key error
-  if (error.code === 11000) {
-    const keyValue = error.keyValue || {};
-    const keys = Object.keys(keyValue).join(", ");
+  if (typeof error === "object" && error !== null && "code" in error && (error as Record<string, unknown>).code === 11000) {
+    const keyValue = (error as Record<string, unknown>).keyValue as Record<string, unknown> | undefined;
+    const keys = Object.keys(keyValue || {}).join(", ");
     return new ConflictError(`Record with duplicate field(s) (${keys}) already exists`);
   }
 
-  // Handle Zod Schema Validation Error (if thrown directly)
-  if (error.name === "ZodError" || error.constructor?.name === "ZodError") {
-    const messages = (error.issues || []).map((issue: any) => {
+  if (isErrorLike(error) && (error.name === "ZodError" || error.constructor?.name === "ZodError")) {
+    const issues = (error as unknown as { issues?: Array<{ path: string[]; message: string }> }).issues || [];
+    const messages = issues.map((issue) => {
       const field = issue.path.join(".");
       return `${field}: ${issue.message}`;
     });
     return new BadRequestError(messages);
   }
 
-  // Handle JWT Validation Errors
-  if (error.name === "JsonWebTokenError") {
+  if (isErrorLike(error) && error.name === "JsonWebTokenError") {
     return new UnauthorizedError("Invalid token, please login again");
   }
-  if (error.name === "TokenExpiredError") {
+  if (isErrorLike(error) && error.name === "TokenExpiredError") {
     return new UnauthorizedError("Session expired, please login again");
   }
 
-  // Generic fallback: Internal Server Error
-  const message = process.env.NODE_ENV === "development" && error.message 
+  const message = process.env.NODE_ENV === "development" && error instanceof Error && error.message 
     ? error.message 
     : "Internal server error";
   return new InternalServerError(message);
 };
 
-export const errorHandler: ErrorRequestHandler = (
-  error,
-  req,
-  res,
-  _next,
-) => {
-  // If it's not an AppError, it is an unexpected/unhandled system error, so we log it for debugging
+export const errorHandler: ErrorRequestHandler = (error, req, res, _next) => {
   if (!(error instanceof AppError)) {
     console.error("Unhandled server error:", error);
   }

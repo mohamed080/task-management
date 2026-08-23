@@ -30,11 +30,11 @@ export const requireAuth = async (
 
         req.userId = payload.userId;
         next();
-    } catch (error: any) {
-        if (error.name === "TokenExpiredError") {
+    } catch (error: unknown) {
+        if (error instanceof Error && error.name === "TokenExpiredError") {
             throw new UnauthorizedError("Session has expired, please log in again");
         }
-        if (error.name === "JsonWebTokenError") {
+        if (error instanceof Error && error.name === "JsonWebTokenError") {
             throw new UnauthorizedError("Invalid token, please log in again");
         }
         throw error;

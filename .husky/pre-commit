@@ -1,1 +1,2 @@
-pnpm --filter server exec tsc --noEmit
+pnpm lint
+pnpm typecheck
