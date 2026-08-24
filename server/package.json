@@ -8,7 +8,9 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -37,9 +39,13 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.2.0",
+    "@types/supertest": "^6.0.3",
     "eslint": "^10.9.0",
+    "mongodb-memory-server": "^11.0.1",
+    "supertest": "^7.2.2",
     "tsx": "^4.23.12",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.67.0"
+    "typescript-eslint": "^8.67.0",
+    "vitest": "^3.2.7"
   }
 }

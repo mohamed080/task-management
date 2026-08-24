@@ -148,65 +148,6 @@ Task priority values:
 
 The frontend can display these as `To Do`, `In Progress`, `Done`, `Low`, `Medium`, and `High`.
 
-## Manual API Test Flow
-
-Register a user:
-
-```bash
-curl -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d "{\"name\":\"Test User\",\"email\":\"test@example.com\",\"password\":\"password123\"}"
-```
-
-Login and copy the returned token:
-
-```bash
-curl -X POST http://localhost:5000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d "{\"email\":\"test@example.com\",\"password\":\"password123\"}"
-```
-
-Create a task:
-
-```bash
-curl -X POST http://localhost:5000/api/tasks \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d "{\"title\":\"Finish assessment\",\"description\":\"Complete backend and frontend\",\"status\":\"todo\",\"priority\":\"high\",\"dueDate\":\"2026-08-30\"}"
-```
-
-List tasks with search, filters, and pagination:
-
-```bash
-curl "http://localhost:5000/api/tasks?search=assessment&status=todo&priority=high&page=1&limit=10" \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
-
-Update a task:
-
-```bash
-curl -X PATCH http://localhost:5000/api/tasks/TASK_ID \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d "{\"status\":\"done\"}"
-```
-
-Delete a task:
-
-```bash
-curl -X DELETE http://localhost:5000/api/tasks/TASK_ID \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
-
-Expected error cases to test:
-
-- Missing token returns `401`
-- Invalid task ID returns `400`
-- Missing required task fields return `400`
-- Duplicate email registration returns `409`
-- Requesting another user's task returns `404`
-- Invalid `page` or `limit` query values return `400`
-
 ## Implemented Features
 
 - User registration and login
@@ -222,6 +163,7 @@ Expected error cases to test:
 - Central error handling
 - Rate limiting
 - `.env.example` without secrets
+- Automated API integration tests with an isolated in-memory MongoDB
 - Responsive frontend task workspace
 - Client-side Zod validation
 - Framer Motion transitions and accessible modal controls
@@ -233,7 +175,6 @@ Expected error cases to test:
 
 ## Known Limitations
 
-- Automated API tests are not included yet; the API can be tested manually with the curl flow above.
 - No live deployment URL is available yet.
 - Docker support is not included.
 
@@ -245,7 +186,10 @@ Backend:
 pnpm --dir server typecheck
 pnpm --dir server lint
 pnpm --dir server build
+pnpm --dir server test
 ```
+
+The API tests use `supertest`, Vitest, and `mongodb-memory-server`. The first test run downloads a MongoDB binary; no running API server or local MongoDB instance is required.
 
 Frontend:
 
