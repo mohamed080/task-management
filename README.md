@@ -19,6 +19,11 @@ A MERN stack task management application with a TypeScript Express API, MongoDB 
 - Tailwind CSS
 - Lucide React
 
+## Test Account
+
+A test account is not required. The reviewer can create an account
+using the registration flow.
+
 ## Project Structure
 
 ```text
@@ -172,10 +177,18 @@ The frontend can display these as `To Do`, `In Progress`, `Done`, `Low`, `Medium
 
 - TypeScript
 - Pagination
+- Automated API integration tests
+- Live deployment (frontend)
+
+## Deployment
+
+- Frontend: https://task-management-client-rosy.vercel.app
+- Backend: https://server-eta-two-14.vercel.app
+- Backend Health Check: https://server-eta-two-14.vercel.app/api/health
 
 ## Known Limitations
 
-- No live deployment URL is available yet.
+- Production backend is currently experiencing a MongoDB connection issue.
 - Docker support is not included.
 
 ## Useful Commands
