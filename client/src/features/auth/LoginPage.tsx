@@ -6,6 +6,7 @@ import { ApiError } from "../../api/http";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { AuthLayout } from "./AuthLayout";
+import { loginSchema } from "./auth.schemas";
 import { useAuth } from "./useAuth";
 
 export function LoginPage() {
@@ -25,10 +26,18 @@ export function LoginPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
+    const validation = loginSchema.safeParse({ email, password });
+    if (!validation.success) {
+      setError(
+        validation.error.issues[0]?.message ??
+          "Check your details and try again.",
+      );
+      return;
+    }
     setIsSubmitting(true);
 
     try {
-      await login({ email, password });
+      await login(validation.data);
       navigate(destination, { replace: true });
     } catch (requestError) {
       setError(

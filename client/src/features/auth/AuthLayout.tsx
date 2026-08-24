@@ -16,7 +16,7 @@ export function AuthLayout({
 }: AuthLayoutProps) {
   return (
     <main className="auth-page min-h-screen overflow-hidden px-5 py-6 text-slate-950 sm:px-8 lg:px-12">
-      <div className="auth-grid mx-auto grid min-h-[calc(100svh-3rem)] max-w-7xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/80 shadow-2xl shadow-slate-900/10 backdrop-blur-xl lg:grid-cols-[1.05fr_0.95fr]">
+      <div className="auth-grid mx-auto grid min-h-[calc(100svh-3rem)] max-w-7xl overflow-hidden rounded-4xl border border-white/70 bg-white/80 shadow-2xl shadow-slate-900/10 backdrop-blur-xl lg:grid-cols-[1.05fr_0.95fr]">
         <section className="auth-visual relative hidden overflow-hidden bg-[#17231d] p-10 text-white lg:flex lg:flex-col lg:justify-between xl:p-14">
           <div className="relative z-10 flex items-center gap-3 text-sm font-black uppercase tracking-[0.22em]">
             <span className="grid size-9 place-items-center rounded-xl bg-lime-300 text-sm text-[#17231d]">

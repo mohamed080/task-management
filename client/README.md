@@ -1,75 +1,63 @@
-# React + TypeScript + Vite
+# Task Management Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The frontend for the Task Management application. It is a React 19 + TypeScript + Vite app with React Router, TanStack Query, Zustand, Zod, Framer Motion, Tailwind CSS, and Lucide icons.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+From the repository root:
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Create `client/.env`:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```env
+VITE_API_URL=http://localhost:5000/api
 ```
+
+Start the development server:
+
+```bash
+pnpm --dir client dev
+```
+
+The client is normally available at `http://localhost:5173` or the next available Vite port.
+
+## Features
+
+- Login and registration with persisted JWT sessions
+- Protected task workspace with logout
+- Task creation and editing with client-side Zod validation
+- Task deletion with confirmation
+- Search, status and priority filters
+- Server-backed pagination
+- Loading, error, empty, and background-fetch states
+- Responsive layout with Framer Motion transitions
+- Keyboard-friendly modal controls and reduced-motion support
+
+## Feature Structure
+
+```text
+src/
+  api/                  HTTP and API modules
+  components/ui/        Shared form and state components
+  features/
+    auth/               Auth pages, store, hook, schemas, and routes
+    tasks/              Task types, queries, schemas, and page orchestration
+      components/       Task form, card, filters, and pagination
+  lib/                  Router and React Query client
+  utils/                Shared formatting helpers
+```
+
+## Scripts
+
+```bash
+pnpm --dir client dev        # Start Vite development server
+pnpm --dir client typecheck  # Run TypeScript checks
+pnpm --dir client lint       # Run ESLint
+pnpm --dir client build      # Create a production build
+pnpm --dir client preview    # Preview the production build
+```
+
+The API server must be running separately for authentication and task requests. See the root README for backend setup and API details.

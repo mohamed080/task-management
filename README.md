@@ -13,6 +13,11 @@ A MERN stack task management application with a TypeScript Express API, MongoDB 
 - Zod
 - JWT
 - bcrypt
+- TanStack Query
+- Zustand
+- Framer Motion
+- Tailwind CSS
+- Lucide React
 
 ## Project Structure
 
@@ -36,6 +41,18 @@ server/src/
   types/        Shared TypeScript request types
   utils/        JWT and pagination helpers
   validators/   Zod request schemas
+```
+
+Frontend structure:
+
+```text
+client/src/
+  api/                  HTTP and API modules
+  components/ui/        Shared form and state components
+  features/auth/        Auth pages, store, hook, schemas, and routes
+  features/tasks/       Task page, queries, schemas, and components
+  lib/                  Router and React Query client
+  utils/                Shared formatting helpers
 ```
 
 ## Prerequisites
@@ -64,6 +81,16 @@ CLIENT_URL=http://localhost:5173
 ```
 
 Do not commit `server/.env`. It is ignored by git.
+
+Create `client/.env`:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+`CLIENT_URL` must match the browser origin used by Vite. The default is
+`http://localhost:5173`; if Vite starts on `http://localhost:5174`, update
+`CLIENT_URL` to that value and restart the server.
 
 ## Setup
 
@@ -195,15 +222,17 @@ Expected error cases to test:
 - Central error handling
 - Rate limiting
 - `.env.example` without secrets
+- Responsive frontend task workspace
+- Client-side Zod validation
+- Framer Motion transitions and accessible modal controls
 
 ## Bonus Features
 
 - TypeScript
 - Pagination
 
-## Known Issues / Incomplete Items
+## Known Limitations
 
-- Frontend task management screens are not complete yet.
 - Automated API tests are not included yet; the API can be tested manually with the curl flow above.
 - No live deployment URL is available yet.
 - Docker support is not included.

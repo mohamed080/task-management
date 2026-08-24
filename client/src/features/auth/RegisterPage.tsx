@@ -6,6 +6,7 @@ import { ApiError } from "../../api/http";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { AuthLayout } from "./AuthLayout";
+import { registerSchema } from "./auth.schemas";
 import { useAuth } from "./useAuth";
 
 export function RegisterPage() {
@@ -21,10 +22,18 @@ export function RegisterPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
+    const validation = registerSchema.safeParse({ name, email, password });
+    if (!validation.success) {
+      setError(
+        validation.error.issues[0]?.message ??
+          "Check your details and try again.",
+      );
+      return;
+    }
     setIsSubmitting(true);
 
     try {
-      await register({ name, email, password });
+      await register(validation.data);
       navigate("/tasks", { replace: true });
     } catch (requestError) {
       setError(
