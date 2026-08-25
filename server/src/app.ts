@@ -1,37 +1,26 @@
-import cors, { type CorsOptions } from "cors";
-import express, { type Express } from "express";
+import express, { Application, Request, Response, NextFunction } from "express";
+import { connectDatabase } from "./config/database.js";
 
-import authRoutes from "./routes/auth.routes.js";
-import taskRoutes from "./routes/task.routes.js";
-import { errorHandler } from "./middleware/error-handler.js";
-import { NotFoundError } from "./errors/app-error.js";
-import { globalLimiter, authLimiter } from "./middleware/rate-limiter.js";
+// Explicitly annotate 'app' as Application
+const app: Application = express();
 
-const app: Express = express();
+// Fix 1: Express Rate Limit Proxy Error
+app.set("trust proxy", 1);
 
-const corsOptions: CorsOptions = {
-    origin: process.env.CLIENT_URL || true,
-};
-
-app.use(cors(corsOptions));
 app.use(express.json());
 
-app.use("/api", globalLimiter);
-
-app.get("/api/health", (_req, res) => {
-    res.status(200).json({ 
-        success: true,
-        message: "Task Management API is running",
-    });
+// Fix 2: Ensure database connection on every request (Vercel Serverless Fix)
+app.use(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await connectDatabase();
+    next();
+  } catch (error) {
+    console.error("Database connection error:", error);
+    res.status(500).json({ error: "Internal Server Error: DB Connection Failed" });
+  }
 });
 
-app.use("/api/auth", authLimiter, authRoutes);
-app.use("/api/tasks", taskRoutes);
-
-app.use((req, _res, next) => {
-    next(new NotFoundError(`Route ${req.method} ${req.originalUrl} not found`));
-});
-
-app.use(errorHandler);
+// Import and attach your routes here
+// app.use("/api/auth", authRoutes);
 
 export default app;
