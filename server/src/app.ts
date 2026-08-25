@@ -1,15 +1,18 @@
 import express, { Application, Request, Response, NextFunction } from "express";
+import cors from "cors";
 import { connectDatabase } from "./config/database.js";
+import authRouter from "./routes/auth.routes.js"; // Adjust path as needed
 
-// Explicitly annotate 'app' as Application
 const app: Application = express();
 
-// Fix 1: Express Rate Limit Proxy Error
 app.set("trust proxy", 1);
+
+// Enable CORS for preflight OPTIONS requests
+app.use(cors());
 
 app.use(express.json());
 
-// Fix 2: Ensure database connection on every request (Vercel Serverless Fix)
+// Database connection middleware
 app.use(async (req: Request, res: Response, next: NextFunction) => {
   try {
     await connectDatabase();
@@ -20,7 +23,15 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-// Import and attach your routes here
-// app.use("/api/auth", authRoutes);
+// Health check endpoint (matches both /health and /api/health)
+app.get(["/health", "/api/health"], (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    message: "Task Management API is running",
+  });
+});
+
+// Mount authentication routes for both local and serverless paths
+app.use(["/auth", "/api/auth"], authRouter);
 
 export default app;
