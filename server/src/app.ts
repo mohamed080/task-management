@@ -1,37 +1,39 @@
-import express, { Application, Request, Response, NextFunction } from "express";
-import cors from "cors";
-import { connectDatabase } from "./config/database.js";
-import authRouter from "./routes/auth.routes.js"; // Adjust path as needed
+import cors, { type CorsOptions } from "cors";
+import express, { type Express } from "express";
 
-const app: Application = express();
+import authRoutes from "./routes/auth.routes.js";
+import taskRoutes from "./routes/task.routes.js";
+import { errorHandler } from "./middleware/error-handler.js";
+import { NotFoundError } from "./errors/app-error.js";
+import { globalLimiter, authLimiter } from "./middleware/rate-limiter.js";
+
+const app: Express = express();
 
 app.set("trust proxy", 1);
 
-// Enable CORS for preflight OPTIONS requests
-app.use(cors());
+const corsOptions: CorsOptions = {
+    origin: process.env.CLIENT_URL,
+};
 
+app.use(cors(corsOptions));
 app.use(express.json());
 
-// Database connection middleware
-app.use(async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    await connectDatabase();
-    next();
-  } catch (error) {
-    console.error("Database connection error:", error);
-    res.status(500).json({ error: "Internal Server Error: DB Connection Failed" });
-  }
+app.use("/api", globalLimiter);
+
+app.get("/api/health", (_req, res) => {
+    res.status(200).json({ 
+        success: true,
+        message: "Task Management API is running",
+    });
 });
 
-// Health check endpoint (matches both /health and /api/health)
-app.get(["/health", "/api/health"], (req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    message: "Task Management API is running",
-  });
+app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/tasks", taskRoutes);
+
+app.use((req, _res, next) => {
+    next(new NotFoundError(`Route ${req.method} ${req.originalUrl} not found`));
 });
 
-// Mount authentication routes for both local and serverless paths
-app.use(["/auth", "/api/auth"], authRouter);
+app.use(errorHandler);
 
 export default app;
