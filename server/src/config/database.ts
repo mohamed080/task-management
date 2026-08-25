@@ -15,6 +15,10 @@ if (!cached) {
 }
 
 export const connectDatabase = async () => {
+  if (mongoose.connection.readyState === 1) {
+    return mongoose;
+  }
+
   const mongoUri = process.env.MONGODB_URI;
 
   if (!mongoUri) {
